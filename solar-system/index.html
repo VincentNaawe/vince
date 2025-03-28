@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Simulation</title>
+    <script src="script/aframe.min.js"></script>
+    <script>
+        AFRAME.registerComponent('orbit', {
+            schema: {
+                speed: {type: 'number', default: 10000},
+                radius: {type: 'number', default: 5},
+                around: {type: 'selector'}
+            },
+            init: function () {
+                this.angle = Math.random() * 2 * Math.PI;
+            },
+            tick: function (time, timeDelta) {
+                this.angle += (timeDelta / this.data.speed) * 2 * Math.PI;
+                let x = this.data.radius * Math.cos(this.angle);
+                let z = this.data.radius * Math.sin(this.angle);
+                let centerX = this.data.around ? this.data.around.object3D.position.x : 0;
+                let centerZ = this.data.around ? this.data.around.object3D.position.z : -15;
+                this.el.object3D.position.set(centerX + x, 1, centerZ + z);
+            }
+        });
+    </script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <a-scene>
+        <a-sky src="texture/2k_stars_milky_way.jpg"></a-sky>
+        <a-entity position="0 5 20">
+            <a-camera></a-camera>
+        </a-entity>
+        
+        
+        <!-- Sun -->
+<a-entity>
+    <!-- Sun with balanced glow -->
+    <a-sphere id="sun" position="0 1 -15" radius="3" 
+        src="textures/sun.jpg" 
+        emissive="#FFA500" 
+        emissive-intensity="1.0">
+    </a-sphere>
+
+    <!-- Sunlight (Softer to prevent overexposure) -->
+    <a-light type="point" position="0 5 -15" intensity="2.5" color="rgba(195, 170, 37, 0.87)"></a-light>
+
+    <!-- Ambient Light (Helps planets retain their colors) -->
+    <a-light type="ambient" color="#999999"></a-light>
+
+    <!-- Sun Label -->
+    <a-text value="Sun" position="0 5 -15" align="center" color="yellow" scale="2 2 2"></a-text>
+</a-entity>
+
+
+        <a-sphere position="0 1 -15" 
+          radius="3.5" 
+          color="orange" 
+          material="opacity: 0.3; transparent: true">
+        </a-sphere>
+         
+          <!-- orbit-path -->
+          <a-ring position="0 1 -15" radius-inner="4" radius-outer="4.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="6" radius-outer="6.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="8" radius-outer="8.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="10" radius-outer="10.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="14" radius-outer="14.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="18" radius-outer="18.1.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="22" radius-outer="22.1" color="white" rotation="270" segment-theta="485"></a-ring>
+          <a-ring position="0 1 -15" radius-inner="26" radius-outer="26.1" color="white" rotation="270" segment-theta="485"></a-ring>
+        <!-- Planets orbiting around the sun -->
+       <a-entity>
+    <a-entity orbit="speed: 4000; radius: 4; around: #sun">
+        <a-sphere src="texture/2k_mercury.jpg" radius="0.3"></a-sphere>
+        <a-text value="Mercury" position="0 0.5 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+
+    <a-entity orbit="speed: 7000; radius: 6; around: #sun">
+        <a-sphere src="texture/2k_venus_atmosphere.jpg" radius="0.6"></a-sphere>
+        <a-text value="Venus" position="0 0.8 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+
+    <a-entity orbit="speed: 10000; radius: 8; around: #sun" id="earth-system">
+        <a-sphere id="earth" src="texture/2k_earth_daymap.jpg" radius="0.7"></a-sphere>
+        <a-text value="Earth" position="0 1 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+
+        <!-- Moon orbiting Earth at a lower position -->
+        <a-entity orbit="speed: 3000; radius: 1.2; around: #earth">
+            <a-sphere src="texture/2k_moon.jpg" radius="0.2" position="0 -0.9 0"></a-sphere>
+            <a-text value="Moon" position="0 -0.5 0" align="center" color="white" scale="1 1 1"></a-text>
+        </a-entity>
+    </a-entity>
+
+    <a-entity orbit="speed: 15000; radius: 10; around: #sun">
+        <a-sphere src="texture/2k_mars.jpg" radius="0.5"></a-sphere>
+        <a-text value="Mars" position="0 0.9 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+
+    <a-entity orbit="speed: 30000; radius: 14; around: #sun">
+        <a-sphere src="texture/2k_jupiter.jpg" radius="1.5"></a-sphere>
+        <a-text value="Jupiter" position="0 1.9 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+
+    <a-entity orbit="speed: 35000; radius: 18; around: #sun">
+        <a-sphere id="saturn" src="texture/2k_saturn.jpg" radius="1.2"></a-sphere>
+        <a-ring src="texture/2k_saturn_ring_alpha.png" position="0 0 0" radius-inner="1.8" radius-outer="2" rotation="-90 0 0"></a-ring>
+        <a-text value="Saturn" position="0 1.7 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+
+    <a-entity orbit="speed: 40000; radius: 22; around: #sun">
+        <a-sphere src="texture/2k_uranus.jpg" radius="1"></a-sphere>
+        <a-text value="Uranus" position="0 1.5 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+
+    <a-entity orbit="speed: 45000; radius: 26; around: #sun">
+        <a-sphere src="texture/2k_neptune.jpg" radius="0.9"></a-sphere>
+        <a-text value="Neptune" position="0 1.5 0" align="center" color="white" scale="1.5 1.5 1.5"></a-text>
+    </a-entity>
+</a-entity>
+
+    </a-scene>
+</body>
+</html>
